@@ -120,7 +120,7 @@ ggplot() +
   scale_y_continuous(breaks = seq(-150, 150, by = 30), limits = c(-160, 160),
                      labels = function(x) ifelse(x < 0, -x, x)) +
    scale_x_continuous(breaks = seq(27, 44, by = 1)) +
- scale_fill_manual(name = "", values = c("Placebo" = "#696969", "RSVpreF 120μg" = "gray", "positive" = "#FFDD44", "negative" = "#005AB5"), labels = c("Excess births in placebo arm",  "Excess births in intervention arm", "Placebo", "Vaccine")) +
+ scale_fill_manual(name = "", values = c("Placebo" = "#696969", "RSVpreF 120μg" = "gray", "positive" = "#FFDD44", "negative" = "#005AB5"), labels = c("Excess births in placebo arm",  "Excess births in intervention arm", "Placebo", "Intervention")) +
    guides(fill = guide_legend(reverse = TRUE)) +
   theme_minimal() +
   theme(

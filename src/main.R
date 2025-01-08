@@ -29,7 +29,7 @@ source("src/benef_calc.R")
 # estimate gestational age (GA)-specific neonatal mortality in South Africa (main)
 source("src/nmr.R")
 
-# look at GA-specific births in South African component of RSVpreF phase 3 trial (main, incuding Fig2B)
+# look at GA-specific births in South African component of RSVpreF phase 3 trial (main, including Fig2B)
 source("src/ptb_posterior.R")
 
 # estimate excess neonatal deaths among infants born to vaccinated mothers compared to unvaccinated mothers in South Africa (main, including Fig2C)
