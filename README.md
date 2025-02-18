@@ -9,7 +9,7 @@ Code accompanying the manuscript "The benefits and risks of maternal RSV vaccina
 * main.R is the script to run.
 
 ### 1) ve_fit.R
-* Codes to esimate waning protection of RSVpreF during infancy using the phase 3 trial data (Mujai et al. RSVVW'24).
+* Codes to esimate waning protection of RSVpreF during infancy using the phase 3 trial data from Munjai I. Protection Against Infant Illness with a Bivalent RSVpreF Vaccine in Pregnancy: Final Analysis. RSVVW’24; 2024 Feb 15; Mumbai. 
 * Data used are embedded in the codes.
 
 ### 2) RSV_burden.R
