@@ -1,6 +1,8 @@
 # The benefits and risks of maternal RSV vaccination on mortality in South Africa: a modelling study
 Ayaka Monoi, Akira Endo,  Simon R Procter, Sequoia I. Leuba, Stefan Flasche,  Mark Jit, Maternal RSV vaccine benefit-risk advisory group
 
+Code accompanying the manuscript "The benefits and risks of maternal RSV vaccination on mortality in South Africa: a modelling study"
+
 ## Overview of the code files in src folder
 
 ## 0) main.R
