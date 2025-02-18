@@ -3,6 +3,7 @@ Ayaka Monoi, Akira Endo,  Simon R Procter, Sequoia I. Leuba, Stefan Flasche,  Ma
 
 ## Overview of the code files in src folder
 
+## 0) main.R
 * main.R is the script to run.
 
 ### 1) ve_fit.R
