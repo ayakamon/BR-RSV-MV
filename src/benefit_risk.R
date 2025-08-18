@@ -137,9 +137,68 @@ for (i in 1:4) {
 
 # results
 count_5
+percentage_5
  ### percentage of iterations in which benefit exceeds risk
 {cat("Pecentage of simulations where benefit exceeds 5 times risk by scenario\n main analysis, withou 1 earliest birth, without 5 earliest births, 27-36 weeks vaccination\n"); print(percentage_5)}
 
+
+###### save summary 
+# combine the results
+# net mortality and ratio of  risk and benefit
+df_t1 <- merge(rd_post_df, rr_post_df, by = "analysis", suffixes = c("_net", "_rr"))
+
+# percentages in which benefit exceeds risk
+df_t1$perc_benefit_exceeds_risk <- percentage
+df_t1$perc_benefit_exceeds_5risk <- percentage_5
+
+df_t1$Scenario <- recode(df_t1$analysis,
+                         "riskM1" = "Base case",
+                         "riskM2" = "Earliest birth removed",
+                         "riskM3" = "Earliest 5 births removed",
+                         "riskM4" = "27-36 GA weeks vaccination")
+df_t1 <-df_t1%>%
+  mutate(Scenario = factor(Scenario,
+                           levels = c("Base case",
+                                      "27-36 GA weeks vaccination",
+                                      "Earliest birth removed",
+                                      "Earliest 5 births removed"))) %>%
+  arrange(Scenario)
+
+
+df_t1 <- df_t1 %>%
+  select(Scenario,
+         median_net, ci_low_net, ci_high_net,
+         median_rr, ci_low_rr, ci_high_rr,
+         perc_benefit_exceeds_risk,
+         perc_benefit_exceeds_5risk)
+
+# excess deaths (from risk_calc.R)
+risk_df <- data.frame(
+  Scenario = c("Base case",
+               "27-36 GA weeks vaccination",
+               "Earliest birth removed",
+               "Earliest 5 births removed"),
+  Risk_median = c(results_list$riskM1$median,
+                  median(calculate_sum(risk_nmr, riskM4)),
+                  results_list$riskM2$median,
+                  results_list$riskM3$median),
+  Risk_ci_low = c(results_list$riskM1$low,
+                  quantile(calculate_sum(risk_nmr, riskM4), 0.025),
+                  results_list$riskM2$low,
+                  results_list$riskM3$low),
+  Risk_ci_high = c(results_list$riskM1$high,
+                   quantile(calculate_sum(risk_nmr, riskM4), 0.975),
+                   results_list$riskM2$high,
+                   results_list$riskM3$high)
+)
+
+
+df_all <- risk_df %>%
+  left_join(df_t1, by = "Scenario")
+
+df_all[ , -1] <- round(df_all[ , -1], 3)
+
+write.csv(df_all, "output/risk_benefit_summary.csv", row.names = FALSE)
 
 ######### Table 1 ends ###################
 
@@ -186,6 +245,32 @@ total_p = 471
 {calculate_death(risk_nmr, prp_p)*total_p}%>%median()
 {calculate_death(risk_nmr, prp_p)*total_p}%>%quantile(.025)
 {calculate_death(risk_nmr, prp_p)*total_p}%>%quantile(.975)
+
+
+values <- c(
+  "median",
+  "l_95",
+  "u_95"
+)
+sa_trial_newbornDeath_vaccine <-  data.frame(
+  value = values,
+  group = "vaccine",
+  figure = c({calculate_death(risk_nmr, prp_v)*total_v}%>%median(),
+             {calculate_death(risk_nmr, prp_v)*total_v}%>%quantile(.025),
+             {calculate_death(risk_nmr, prp_v)*total_v}%>%quantile(.975))
+)
+
+sa_trial_newbornDeath_placebo <-  data.frame(
+  value = values,
+  group = "placebo",
+  figure = c({calculate_death(risk_nmr, prp_p)*total_p}%>%median(),
+             {calculate_death(risk_nmr, prp_p)*total_p}%>%quantile(.025),
+             {calculate_death(risk_nmr, prp_p)*total_p}%>%quantile(.975))
+)
+
+sa_trial_newbornDeath_summary <- sa_trial_newbornDeath_vaccine %>% bind_rows(sa_trial_newbornDeath_placebo)
+
+write.csv(sa_trial_newbornDeath_summary, "output/sa_trial_newbornDeath_summary.csv", row.names = FALSE)
 
 
 
@@ -248,7 +333,21 @@ benef_by_country$ZAF$median/100000*total_v
 benef_by_country$ZAF$low/100000*total_v
 benef_by_country$ZAF$high/100000*total_v
 
+values <- c(
+  "median",
+  "l_95",
+  "u_95"
+)
 
+sa_trial_death_vaccine <-  data.frame(
+  value = values,
+  figure = c(bene_by_country$ZAF$median/100000*total_v,
+             bene_by_country$ZAF$low/100000*total_v,
+             bene_by_country$ZAF$high/100000*total_v)
+)
+
+
+write.csv(sa_trial_death_vaccine, "output/sa_trial_death_vaccine.csv", row.names = FALSE)
 
 #########
 
@@ -300,4 +399,24 @@ ben_by_country
 ben_by_country$ZAF$median/100000*total_p
 ben_by_country$ZAF$low/100000*total_p
 ben_by_country$ZAF$high/100000*total_p
+
+values <- c(
+  "median",
+  "l_95",
+  "u_95"
+)
+
+sa_trial_death_placebo <-  data.frame(
+  value = values,
+  figure = c(ben_by_country$ZAF$median/100000*total_p,
+  ben_by_country$ZAF$low/100000*total_p,
+  ben_by_country$ZAF$high/100000*total_p)
+)
+
+
+
+
+write.csv(sa_trial_death_placebo, "output/sa_trial_death_placebo.csv", row.names = FALSE)
+
+
 
