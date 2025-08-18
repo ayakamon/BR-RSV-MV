@@ -61,9 +61,12 @@ for (country in countries) {
     death_avert_age <- ve_age$VE_t * death_age$death  #VE*RSV-deaths at that age in month
     dat_list[[i]] <- death_avert_age
   }
-  #dat_list includes 1000 samples for averted deaths by age in month
 
-# 1000 samples for infant deaths averted
+  #dat_list includes 10000 samples for averted deaths by age in month 
+  
+  #########
+
+# 10000 samples for infant deaths averted 
   sum_samples <- numeric(num_s)
   for (j in 1:num_s) {
     sample_age <- numeric(12)
@@ -169,6 +172,28 @@ for (country in countries) {
 ### Results ###
 #Country-specific RSV-associated deaths averted
 print(benef_sens)
+
+
+# main analysis
+benef_sa <- data.frame(
+  country = "ZAF",
+  median = benef_by_country$ZAF$median[["50%"]],
+  low_2.5 = benef_by_country$ZAF$low[["2.5%"]],
+  high_97.5 = benef_by_country$ZAF$high[["97.5%"]]
+)
+
+write.csv(benef_sa, "output/benef_main.csv", row.names = FALSE)
+
+# sensitivity analysis
+benef_sa_sens <- data.frame(
+  country = "ZAF",
+  median = benef_sens$ZAF$median[["50%"]],
+  low_2.5 = benef_sens$ZAF$low[["2.5%"]],
+  high_97.5 = benef_sens$ZAF$high[["97.5%"]]
+)
+
+write.csv(benef_sa_sens, "output/benef_sens.csv", row.names = FALSE)
+
 
 
 
