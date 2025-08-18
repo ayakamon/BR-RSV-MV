@@ -274,14 +274,32 @@ data <- data.frame(
 #add GA
 data$label <- 27:44
 
-#change color
-ggplot(data, aes(x = factor(label), y = median )) +
-  geom_bar(stat = "identity", aes(fill = ifelse(median < 0, "Negative", "Positive"))) +
-  geom_errorbar(aes(ymin = quantile_2.5 , ymax = quantile_97.5 ), width = 0) +
-  scale_y_continuous(breaks = seq(-100, 200, by = 20), labels = scales::comma) +
-  labs(x = "Gestational age at birth (weeks)", y = "Excess neonatal deaths \n(per 100,000 live births)", fill = " ") +
-  scale_fill_manual(values = c("Negative" = "#0C7BDC", "Positive" = "#FFC20A"),
-                    labels = c("Negative" = "Excess deaths estimated among controls", "Positive" = "Excess deaths estimated among vaccinees"))+
+# change to continuous x axis
+p_2c <-　ggplot(data, aes(x = label, y = median)) +
+  geom_col(
+    aes(fill = ifelse(median < 0, "Negative", "Positive")),
+    width = 0.9
+  ) +
+  geom_errorbar(aes(ymin = quantile_2.5, ymax = quantile_97.5), width = 0) +
+  scale_x_continuous(
+    breaks = seq(min(data$label), max(data$label), by = 1)
+  ) +
+  scale_y_continuous(
+    breaks = seq(-100, 200, by = 20),
+    labels = scales::comma
+  ) +
+  labs(
+    x = "Gestational age at birth (weeks)",
+    y = "Estimated excess neonatal deaths \n(per 100,000 live births)",
+    fill = " "
+  ) +
+  scale_fill_manual(
+    values = c("Negative" = "#0C7BDC", "Positive" = "#FFC20A"),
+    labels = c(
+      "Negative" = "Excess deaths among individuals given placebo",
+      "Positive" = "Excess deaths among vaccinees"
+    )
+  ) +
   guides(fill = guide_legend(reverse = TRUE)) +
   theme_minimal() +
   theme(
@@ -290,23 +308,18 @@ ggplot(data, aes(x = factor(label), y = median )) +
     plot.title = element_text(size = 24, face = "bold"),
     legend.text = element_text(size = 24),
     legend.title = element_text(size = 24),
-    legend.position = c(.6,0.7)
-  )+
-  annotate("text", x = 0, y = 210, 
-           label = "(C)", size = 8, hjust = 0)
-
-# ### save as pdf (Fig 2C)###
-ggsave(
-  filename = "output/fig2C.pdf",
-  plot = last_plot(),
-  device = "pdf",
-  width = 11, height = 7,
-  units = "in"
-)
+    legend.position = c(.5, 0.7),
+    panel.grid.minor.x = element_blank()
+  ) 
 
 
 #proportion of deaths of infants born at 27wks out of overall excess death
 stat_summaries[[1]]$median/results_list$riskM1$median*100
+
+
+
+
+
 
 
 
