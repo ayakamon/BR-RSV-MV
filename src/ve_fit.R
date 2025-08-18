@@ -118,14 +118,13 @@ model_ve <-resp %>%
   filter(group == "Severe")
 
 #### VE vs RSV-positive severe MA-LRTI at each age after birth
-model_ve%>%
-  filter(t == 1) %>% #1 day
-  {cat("VE vs severe disease at 1 day of life\n"); print(.)}
+sev_ve_1 <- model_ve%>%
+  filter(t == 1) #1 day
 
+sev_ve_365 <- model_ve%>%
+  filter(t == 365) #end of 1st year
 
-model_ve%>%
-  filter(t == 365) %>% #end of 1st year
-{cat("VE vs severe disease at 1 year of life\n"); print(.)}
+sev_ve_1 %>% bind_rows(sev_ve_365)
 
 
 #### VE vs less severe
@@ -142,14 +141,16 @@ model_ve_less <-resp %>%
   filter(group == "Less severe")
 
 
-model_ve_less%>%
-  filter(t == 365) %>% #12 month
-  {cat("VE vs less severe disease at 1 year of life\n"); print(.)}
+less_ve_365 <- model_ve_less%>%
+  filter(t == 365)  #12 month
 
 
-model_ve_less%>%
-  filter(t == 1) %>% #1 day
-{cat("VE vs less severe disease at 1 day of life\n"); print(.)}
+less_ve_1 <- model_ve_less%>%
+  filter(t == 1) #1 day
+
+result_ve <- less_ve_1 %>% bind_rows(less_ve_365) %>% bind_rows(sev_ve_1) %>% bind_rows(sev_ve_365)
+write.csv(result_ve, "output/ve_summary.csv", row.names = FALSE)
+
 
 #### plot Fig 1 ####
 
@@ -247,12 +248,48 @@ rbind(dat_mat_sev,dat_mat_LRTI) %>%
 
 
 
-
 ### save as pdf (Fig 1)###
 ggsave(
   filename = "output/fig1.pdf",
   plot = last_plot(),
   device = "pdf",
   width = 14, height = 8,
+  units = "in"
+)
+
+
+
+
+
+## check convergence ######
+out_ba[[1]]
+
+bay1 <- getSample(out_ba, coda = TRUE)[1]
+
+num = iter/settings$thin
+
+trace_ve <- mcmc(bay1[[1]][seq(1,iter, by=10),])
+colnames(trace_ve) <- c("VE0_s", "VE0_l", "T_v")
+
+## for the 'xyplot' command
+ess_ve <- effectiveSize(trace_ve)
+write.csv(ess_ve, file = "output/ess_ve.csv")
+
+
+xyplot(trace_ve)
+densityplot(trace_ve)
+
+plot_ve1 <- xyplot(trace_ve)
+plot_ve2 <- densityplot(trace_ve)
+
+p_mc_ve <- grid.arrange(plot_ve1, plot_ve2, ncol = 2)
+print(p_mc_ve)
+
+# ### save as pdf ###
+ggsave(
+  filename = "output/suppl_mcmc_ve.pdf",
+  plot = p_mc_ve,
+  device = "pdf",
+  width = 10, height = 10,
   units = "in"
 )
