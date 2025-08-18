@@ -347,7 +347,6 @@ sa_trial_death_vaccine <-  data.frame(
 )
 
 
-# CSV 保存
 write.csv(sa_trial_death_vaccine, "output/sa_trial_death_vaccine.csv", row.names = FALSE)
 
 #########
