@@ -15,7 +15,7 @@
 
 set.seed(1234)
 ### Data ###
-
+#  https://terrance.who.int/mediacentre/data/sage/SAGE_Slidedeck_September-2024.pdf.
 ################ main analysis ###################################
 ## All births in South Africa
 #vaccine arm
@@ -91,7 +91,7 @@ difference_data <- combined_data %>%
   summarise(Difference = sum(Median[ARM == "RSVpreF 120μg"]) + sum(Median[ARM == "Placebo"]))
 
 #### plot Fig 2B ###
-ggplot() +
+p_2b <- ggplot() +
   geom_bar(data = combined_data, aes(x = GA, y = Median, fill = ARM), stat = "identity", position = "stack") +
   geom_errorbar(data = combined_data, aes(x = GA, ymin = ifelse(ARM == "Placebo", -Quantile_97.5, Quantile_2.5),
                                           ymax = ifelse(ARM == "Placebo", -Quantile_2.5, Quantile_97.5)), width = 0) +
@@ -102,31 +102,19 @@ ggplot() +
                      labels = function(x) ifelse(x < 0, -x, x)) +
   scale_x_continuous(breaks = seq(27, 44, by = 1)) +
   scale_fill_manual(name = "", values = c("Placebo" = "#696969", "RSVpreF 120μg" = "gray", "positive" = "#FFDD44", "negative" = "#005AB5"), labels = c("Excess births in placebo arm",  "Excess births in intervention arm", "Placebo", "Intervention")) +
-    guides(fill = guide_legend(reverse = TRUE)) +
- theme_minimal() +
-   theme(
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme_minimal() +
+  theme(
     legend.position = c(0.3, 0.8),
     axis.text = element_text(size = 24),
     axis.title = element_text(size = 24),
     legend.title = element_text(size = 24),
     legend.text = element_text(size = 24),
-panel.grid.major.x = element_line(color = "grey", size = 0.1), 
-panel.grid.minor.x = element_blank() 
-) +
+    panel.grid.major.x = element_line(color = "grey", size = 0.1), 
+    panel.grid.minor.x = element_blank() 
+  ) +
   annotate("text", x = 26, y = 160, 
            label = "(B)", size = 8, hjust = 0)
-
-
-
-
-### save as pdf (Fig 2B)###
-ggsave(
-  filename = "output/fig2B.pdf",
-  plot = last_plot(),
-  device = "pdf",
-  width = 11, height = 7,
-  units = "in"
-)
 
 
 
