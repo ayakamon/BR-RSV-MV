@@ -24,6 +24,8 @@ tibble(Tmin = seq(26*7,43*7, by=7), #from 27 ga weeks (days)
   mutate(Tmid = (Tmin+Tmax)/2, #days after birth
          nmr = observed_deaths/total_population)-> dat_dch
 
+
+
 confidence_intervals <- apply(dat_dch[, c("observed_deaths", "total_population")], #calculate CI using exact binomial test
                               1,
                               function(x) binom.test(x[1], x[2])$conf.int)
@@ -46,8 +48,8 @@ erlang.func <- function(NMR0, T, k = 2, t = min(dat_dch$Tmin):max(dat_dch$Tmax))
   re <- numeric(length(t))
   for (i in seq_along(t)) {
     re[i] <- ifelse(t[i] < 36 * 7,
-                     sum(sapply(0:(k - 1), function(n) 1 / factorial(n) * exp(-T * (t[i] - 181)) * (T * (t[i] - 181))^n)), #for <37weeks
-                     sum(sapply(0:(k - 1), function(n) 1 / factorial(n) * exp(-T * (36 * 7 - 181)) * (T * (36 * 7 - 181))^n))) #for 37+ weeks
+                    sum(sapply(0:(k - 1), function(n) 1 / factorial(n) * exp(-T * (t[i] - 181)) * (T * (t[i] - 181))^n)), #for <37weeks
+                    sum(sapply(0:(k - 1), function(n) 1 / factorial(n) * exp(-T * (36 * 7 - 181)) * (T * (36 * 7 - 181))^n))) #for 37+ weeks
   }
   return(NMR0 * re)
 }
@@ -74,6 +76,7 @@ erlang.func(out_freq$par[1], out_freq$par[2], t=min(dat_dch$Tmin):max(dat_dch$Tm
 
 ##Bayesian
 bayesianSetup = createBayesianSetup(likelihood = LL, lower = c(.1, .01), upper = c(.5,.1))
+
 iter = 50000
 burnin = 1000
 settings = list(iterations = iter,  burnin=burnin,message = FALSE, nrChains = 4, thin =4)
@@ -83,6 +86,49 @@ summary(out_bay)
 plot(out_bay)
 
 
+
+## check convergence ######
+out_bay[[1]]
+
+bay2 <- getSample(out_bay, coda = TRUE)[1]
+
+num = (iter - burnin)/settings$thin
+
+trace1 <- mcmc(bay2[[1]][seq(1,num),])
+
+# num_sm  samples are used to calculate the risk
+num_sm <- 10000
+trace1 <- mcmc(bay2[[1]][seq(1,num_sm),])
+
+colnames(trace1) <- c("NMRO", "T_m")
+
+
+## for the 'xyplot' command
+effectiveSize(trace1)
+ess_nmr <- effectiveSize(trace1)
+write.csv(ess_nmr, file = "output/ess_nmr.csv")
+
+
+xyplot(trace1)
+densityplot(trace1)
+
+plot1 <- xyplot(trace1)
+plot2 <- densityplot(trace1)
+
+p_mc <- grid.arrange(plot1, plot2, ncol = 2)
+print(p_mc)
+
+
+# ### save as pdf ###
+ggsave(
+  filename = "output/suppl_mcmc_nmr.pdf",
+  plot = p_mc,
+  device = "pdf",
+  width = 10, height = 7,
+  units = "in"
+)
+
+#########################
 num = (iter - burnin)/settings$nrChains
 
 out_bay[[1]]$chain[seq(1,num),1:2]%>%
@@ -107,8 +153,11 @@ model <-nmr_bay %>%
 model %>% filter(t%in%seq(25*7-4, 44*7-4, by=7))%>% mutate(GA=(t-3)/7+1)%>%kable()%>% 
   {cat("Estiamted neonatal mortality\n"); print(.)}
 
+nmr_summary <- model %>% filter(t%in%seq(25*7-4, 44*7-4, by=7))%>% mutate(GA=(t-3)/7+1)
+write.csv(nmr_summary, "output/nmr_summary.csv", row.names = FALSE)
+
 #plot (Fig 2A)
-ggplot(data = dat_dch, aes(x=Tmid, y=nmr)) +
+p_2a <- ggplot(data = dat_dch, aes(x=Tmid, y=nmr)) +
   geom_point(size = 3)+
   geom_errorbar(aes(ymin = CI95_low, ymax = CI95_high), width = 0.2)+
   geom_ribbon(data = model, aes(x=t, y=nmr_t_mid, ymin=nmr_t_lo, ymax=nmr_t_hi),
@@ -121,22 +170,12 @@ ggplot(data = dat_dch, aes(x=Tmid, y=nmr)) +
   scale_x_continuous(breaks = dat_dch$Tmid, labels=c(27:44))+
   coord_cartesian(ylim=c(0,.9)) +
   theme_minimal()+
- # theme_classic() +
+  # theme_classic() +
   theme(
     axis.text = element_text(size = 20),
     axis.title = element_text(size = 20),
     plot.title = element_text(size = 20, face = "bold") ,
     panel.grid.major.x = element_line(color = "grey", size = 0.1), 
     panel.grid.minor.x = element_blank() 
-  )+
-  annotate("text", x = 178, y = 0.8, 
-                 label = "(A)", size = 7, hjust = 0)
+  )
 
-# ### save as pdf (Fig 2A)###
-ggsave(
-  filename = "output/fig2A.pdf",
-  plot = last_plot(),
-  device = "pdf",
-  width = 10, height = 7,
-  units = "in"
-)
