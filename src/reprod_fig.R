@@ -14,7 +14,92 @@
 # analysis4 = "South Africa with mothers vaccinated at 27-36 weeks"
 
 set.seed(1234)
-### Fig S1 ###
+
+### Fig 2ABC ###
+p_2a <- 
+  p_2a +
+  scale_x_continuous(
+    breaks = dat_dch$Tmid,           # midpoints in days
+    labels = 27:44,                  # shown as weeks
+ #   limits = range(dat_dch$Tmid),    # snap panel edges to first/last week
+    limits = c(min(dat_dch$Tmin), max(dat_dch$Tmax)),  
+    expand = c(0, 0)
+  ) +
+  theme(
+    panel.grid.major.x = element_line(color = "grey80"),
+    panel.grid.minor.x = element_blank()
+  )
+
+p_2b <- p_2b +
+  scale_x_continuous(
+    breaks = 27:44,
+    limits = c(26.5, 44.5),
+    expand = c(0, 0)
+  )
+
+
+p_2c <- p_2c +
+  scale_x_continuous(
+    breaks = 27:44,
+    #    limits = c(27, 44),
+    limits = c(26.5, 44.5),
+    expand = c(0, 0)
+  )
+
+
+
+fig2 <- ggarrange(p_2a, p_2b, p_2c, ncol = 1, nrow = 3, align = "v",
+                  labels = c("(A)", "(B)", "(C)"),
+                  font.label = list(size = 22),
+                  label.x = 0.02,      # （0 = left end, 1 = right end）
+                  label.y = 0.99  )
+
+
+ggsave(
+  filename = "output/fig2.pdf",
+ plot = fig2,
+ device = "pdf",
+  width = 11, height = 21,
+  units = "in"
+)
+
+
+### Fig 3ABC ###
+p_3b <- p_3b +
+  scale_x_continuous(
+    breaks = 27:44,
+    limits = c(26.5, 44.5),
+    expand = c(0, 0)
+  )
+
+
+p_3c <- p_3c +
+  scale_x_continuous(
+    breaks = 27:44,
+    #    limits = c(27, 44),
+    limits = c(26.5, 44.5),
+    expand = c(0, 0)
+  )
+
+
+
+fig3 <- ggarrange(p_2a, p_3b, p_3c, ncol = 1, nrow = 3, align = "v",
+                  labels = c("(A)", "(B)", "(C)"),
+                  font.label = list(size = 22),
+                  label.x = 0.02,      # （0 = left end, 1 = right end）
+                  label.y = 0.99  )
+
+
+ggsave(
+  filename = "output/fig3.pdf",
+  plot = fig3,
+  device = "pdf",
+  width = 11, height = 21,
+  units = "in"
+)
+
+
+### Fig S5 ###
 # Calculate post_risk for analyses
 post_risk_list <- lapply(paste0("riskM", 1:3), function(riskM) {
   calculate_sum(risk_nmr, get(riskM))
@@ -36,7 +121,6 @@ for (i in 1:3) {
 }
 
 
-### Fig S1 ###
 ggplot(plo_data, aes(x = factor(list_element, levels = rev(unique(list_element))), y = value)) +
   geom_violin(trim = FALSE, fill = "#4895D1") +
   geom_hline(yintercept = 1) +
@@ -62,7 +146,7 @@ ggplot(plo_data, aes(x = factor(list_element, levels = rev(unique(list_element))
 
 ##save
 ggsave(
-  filename = "output/figS1.pdf",
+  filename = "output/figS5.pdf",
   plot = last_plot(),
   device = "pdf",
   width = 11, height = 7,
@@ -71,7 +155,7 @@ ggsave(
 
 
 
-### Fig S2 ###
+### Fig S6 ###
 # Calculate post_risk for analyses
 post_risk_list_fix <- lapply(paste0("riskdif", 1:3), function(riskdif) { 
   calculat_sum(risk_nmr, get(riskdif))
@@ -93,7 +177,6 @@ for (i in 1:3) {
 }
 
 
-### Fig S2 ###
 ggplot(plo_data_fix, aes(x = factor(list_element, levels = rev(unique(list_element))), y = value)) +
   geom_violin(trim = FALSE, fill = "#4895D1") +
   geom_hline(yintercept = 1) +
@@ -118,7 +201,7 @@ ggplot(plo_data_fix, aes(x = factor(list_element, levels = rev(unique(list_eleme
 
 ##save
 ggsave(
-  filename = "output/figS2.pdf",
+  filename = "output/figS6.pdf",
   plot = last_plot(),
   device = "pdf",
   width = 11, height = 7,
@@ -158,7 +241,19 @@ count_fix
 {cat("Pecentage of simulations where benefit exceeds risk by scenario without bootstrapping trial birth data\n main analysis, without 1 earliest birth, without 5 earliest births\n"); print(percentage_fix)}
 
 
+scenarios <- c(
+  "main analysis",
+  "without 1 earliest birth",
+  "without 5 earliest births"
+)
 
+
+df_percent_fix <- data.frame(
+  scenario = scenarios,
+  percent_benefit_exceeds_risk = percentage_fix
+)
+
+write.csv(df_percent_fix, "output/benefit_vs_risk_no_bootstrap.csv", row.names = FALSE)
 
 
 ### Fig 4 ###
@@ -197,4 +292,6 @@ ggsave(
   width = 11, height = 8,
   units = "in"
 )
+
+
 
