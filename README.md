@@ -1,5 +1,6 @@
 # The benefits and risks of maternal RSV vaccination on mortality in South Africa: a modelling study
-Ayaka Monoi, Akira Endo,  Simon R Procter, Sequoia I. Leuba, Stefan Flasche,  Mark Jit, Maternal RSV vaccine benefit-risk advisory group
+Ayaka Monoi, Akira Endo,  Simon R Procter, Sequoia I. Leuba, Stefan Flasche,  Mark Jit, Maternal RSV vaccine benefit-risk advisory group (Philippe Beutels, Cheryl Cohen, Daniel R. Feikin, Mihaly Koltai, Shabir A. Madhi, Jocelyn Moyes, Patrick K. Munywoki, Joyce Nyiro, Bryan O. Nyawanda, Erin Sparrow, Heather J Zar)
+
 
 Code accompanying the manuscript "The benefits and risks of maternal RSV vaccination on mortality in South Africa: a modelling study"
 
@@ -14,11 +15,11 @@ Code accompanying the manuscript "The benefits and risks of maternal RSV vaccina
 
 ### 2) RSV_burden.R
 *  Codes to estimate country-specific RSV-associated deaths with initial input from Koltai M, et al. Estimating the cost-effectiveness of maternal vaccination and monoclonal antibodies for respiratory syncytial virus in Kenya and South Africa. BMC Med. 2023 Mar 31;21(1):120. doi: 10.1186/s12916-023-02806-w. PMID: 37004062; PMCID: PMC10064962.
-*  Data used are Koltai_figure_2B.csv
+*  Data used are data/Koltai_figure_2B.csv
 
 ### 3) nmr.R
 * Codes to estimate gestaional age-specific neonatal mortality in South Africa.
-* Dammy data are embeded in the codes.
+* Dummy data are embeded in the codes.
 
 ### 4) ptb_posterior.R
 * Codes to obtain posterior samples of gestational ages in South African compornent of the phase 3 trial by trial arm.
@@ -40,7 +41,7 @@ Code accompanying the manuscript "The benefits and risks of maternal RSV vaccina
 * RSV hospitalisations in South Africa from Koltai M, et al. Estimating the cost-effectiveness of maternal vaccination and monoclonal antibodies for respiratory syncytial virus in Kenya and South Africa. BMC Med. 2023 Mar 31;21(1):120. doi: 10.1186/s12916-023-02806-w. PMID: 37004062; PMCID: PMC10064962.
 
 ### 4) nmr.csv
-* Dammy data for neonatal mortality in South Africa.
+* Dummy data for neonatal mortality in South Africa.
 
 ### 5) nmr_hazel.csv
 * Neonatal mortality data from Hazel EA, et al. Neonatal mortality risk of vulnerable newborns by fine stratum of gestational age and birthweight for 230 679 live births in nine low- and middle-income countries, 2000-2017. BJOG. 2024 Jan 16. doi: 10.1111/1471-0528.17743. Epub ahead of print. PMID: 38228570.
