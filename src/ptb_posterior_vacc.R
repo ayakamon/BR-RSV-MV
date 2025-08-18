@@ -1,5 +1,4 @@
-### created by Ayaka Monoi on 2024/9/4
-
+### created by Ayaka Monoi
 
 ### libraries ###
 # library(MCMCpack)
@@ -12,7 +11,7 @@
 # conflicts_prefer(dplyr::filter)
 
 ### Data ###
-### Number of births by trial arm by GA in Pfizer's Phase 3 trials (downloaded from the WHO website: https://terrance.who.int/mediacentre/data/sage/SAGE_Slidedeck_September-2024.pdf. on October 9, 2024 )########
+### https://terrance.who.int/mediacentre/data/sage/SAGE_Slidedeck_September-2024.pdf. 
 set.seed(1234)
 ################ main analysis ###################################
 ## All births in South Africa
@@ -110,7 +109,7 @@ difference_data_vac <- combined_data_vac %>%
   summarise(Difference = sum(Median[ARM == "RSVpreF 120μg"]) + sum(Median[ARM == "Placebo"]))
 
 #### plot
-ggplot() +
+p_3b <- ggplot() +
   geom_bar(data = combined_data_vac, aes(x = GA, y = Median, fill = ARM), stat = "identity", position = "stack") +
   geom_errorbar(data = combined_data_vac, aes(x = GA, ymin = ifelse(ARM == "Placebo", -Quantile_97.5, Quantile_2.5),
                                           ymax = ifelse(ARM == "Placebo", -Quantile_2.5, Quantile_97.5)), width = 0) +
@@ -136,14 +135,7 @@ ggplot() +
            label = "(B)", size = 8, hjust = 0)
   
 
-### save as pdf (Fig 3B)###
-ggsave(
-  filename = "output/fig3B.pdf",
-  plot = last_plot(),
-  device = "pdf",
-  width = 11, height = 7,
-  units = "in"
-)
+
 
 ######### Plot Fig 3C##############
 
@@ -269,13 +261,22 @@ data_vac <- data.frame(
 data_vac$label <- 27:44
 
 #change color
-ggplot(data_vac, aes(x = factor(label), y = median )) +
-  geom_bar(stat = "identity", aes(fill = ifelse(median < 0, "Negative", "Positive"))) +
+p_3c <- 
+  #ggplot(data_vac, aes(x = factor(label), y = median )) +
+  ggplot(data_vac, aes(x = label, y = median )) +
+#  geom_bar(stat = "identity", aes(fill = ifelse(median < 0, "Negative", "Positive"))) +
+  geom_col(
+    aes(fill = ifelse(median < 0, "Negative", "Positive")),
+    width = 0.9
+  ) +
   geom_errorbar(aes(ymin = quantile_2.5 , ymax = quantile_97.5 ), width = 0) +
+  scale_x_continuous(
+    breaks = seq(min(data_vac$label), max(data_vac$label), by = 1)
+  ) +
   scale_y_continuous(breaks = seq(-100, 200, by = 20), labels = scales::comma) +
-  labs(x = "Gestational age at birth (weeks)", y = "Excess neonatal deaths \n(per 100,000 live births)", fill = " ") +
+  labs(x = "Gestational age at birth (weeks)", y = "Estimated excess neonatal deaths \n(per 100,000 live births)", fill = " ") +
   scale_fill_manual(values = c("Negative" = "#0072B2", "Positive" = "#FFC20A"),
-                    labels = c("Negative" = "Excess deaths estimated among controls", "Positive" = "Excess deaths estimated among vaccinees"))+
+                    labels = c("Negative" = "Excess deaths among individuals given placebo", "Positive" = "Excess deaths among vaccinees"))+
    guides(fill = guide_legend(reverse = TRUE)) +
   theme_minimal() +
   theme(
@@ -283,20 +284,10 @@ ggplot(data_vac, aes(x = factor(label), y = median )) +
     axis.title = element_text(size = 24),
     plot.title = element_text(size = 24, face = "bold"),
     legend.text = element_text(size = 24),
-    legend.title = element_text(size = 24),
+    legend.title = element_text(size = 22),
     legend.position = c(.6,0.2),
     panel.grid.major.x = element_line(color = "grey", size = 0.1), 
     panel.grid.minor.x = element_blank() 
-  )+
-  annotate("text", x = 0, y = 45, 
-           label = "(C)", size = 8, hjust = 0)
+  )
 
 
-### save as pdf (Fig 3C)###
-ggsave(
-  filename = "output/fig3C.pdf",       
-  plot = last_plot(),           
-  device = "pdf",              
-  width = 11, height = 7,       
-  units = "in"                  
-)
