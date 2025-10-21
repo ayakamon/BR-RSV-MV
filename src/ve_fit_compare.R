@@ -431,7 +431,7 @@ model_ve_ex <-resp_ex %>%
 
 #### VE vs RSV-positive severe MA-LRTI at each age after birth
  model_ve_ex%>%
-  filter(t == 150) %>% #1 day
+  filter(t == 150) %>% #5 month
   {cat("VE (exponential) vs severe disease at 150 days of life\n"); print(.)}
 
 
@@ -623,7 +623,7 @@ print(waic_result_3)
 
 #getSample(out_ba1, coda = TRUE)[2] -> bay #change 1 to 3
 getSample(out_ba3, coda = TRUE)[2] -> bay #change 1 to 3
-BurnBay <- burnAndThin(bay, burn = 110) #
+BurnBay <- burnAndThin(bay, burn = 110) 
 plot(BurnBay)
 
 
