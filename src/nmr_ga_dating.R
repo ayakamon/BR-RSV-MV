@@ -4,7 +4,7 @@ set.seed(1234)
 
 ### Dummy data of births and deaths at each gestational age from the Drakenstein Child Health Study (Zar HJ, et al. Maternal health and birth outcomes in a South African birth cohort study. Hill B, editor. PLOS ONE. 2019 Nov 21;14(11):e0222399. )
 tibble(Tmin = seq(26*7,36*7, by=7),
-       Tmax = c(seq(27*7,37*7, by=7)), #tentatively consider 37 weeks to
+       Tmax = c(seq(27*7,37*7, by=7)), 
        deaths_obs = c(1,1,1,1,1,1,1,1,1,1,1),
        births_obs = c(10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1000))%>%
   rowwise() %>%
@@ -48,7 +48,7 @@ ga_rsmpl<- bind_rows(data_list)
 
 
 ##resample
-num_rsmpl =5
+num_rsmpl <- 5
 birth_rsmpl = matrix(0, nrow = num_rsmpl, ncol = length(25:39))
 death_rsmpl = matrix(0, nrow = num_rsmpl, ncol = length(25:39))
 data_list <- list()
@@ -84,7 +84,7 @@ death_rsmpl%>%sum()
 
 tibble(GA = c(25:39),
        Tmin = seq(24*7,38*7, by=7),
-       Tmax = seq(25*7,39*7, by=7), #need to be changed to 37+ constant
+       Tmax = seq(25*7,39*7, by=7), 
        death = death_rsmpl[i,],
        birth = birth_rsmpl[i,])-> dat_rsm
 
@@ -93,7 +93,7 @@ tibble(GA = c(25:39),
 i = 5 #change to resample from 1 to 5
 tibble(GA = c(25:39),
        Tmin = seq(24*7,38*7, by=7),
-       Tmax = seq(25*7,39*7, by=7), #need to be changed to 37+ constant
+       Tmax = seq(25*7,39*7, by=7), 
        death = death_rsmpl[i,],
        birth = birth_rsmpl[i,])-> dat_rsm
 
@@ -104,7 +104,7 @@ erlang.func_dat <- function(NMR0, T, k = 2, t = 168:308) {
   re <- numeric(length(t))
   for (i in seq_along(t)) {
     re[i] <- ifelse(t[i] < 36 * 7,
-                     sum(sapply(0:(k - 1), function(n) 1 / factorial(n) * exp(-T * (t[i] - (24*7-1))) * (T * (t[i] - (24*7-1)))^n)), #181 = 26*7-1
+                     sum(sapply(0:(k - 1), function(n) 1 / factorial(n) * exp(-T * (t[i] - (24*7-1))) * (T * (t[i] - (24*7-1)))^n)), 
                      sum(sapply(0:(k - 1), function(n) 1 / factorial(n) * exp(-T * (36 * 7 - (24*7-1))) * (T * (36 * 7 - (24*7-1)))^n)))
   }
   return(NMR0 * re)
@@ -149,12 +149,11 @@ out_bay_dat[[1]]$chain[seq(1,2250),1:2]%>%
   as_tibble() %>%
   rename('NMR0'='1', 'T'='2') -> nmr_bay_dat
 
-##To calculate the risk, go to risk_cal_ci.R
 
 
 
 ##Make posterior samples of NMR
-#from nmr.R after run MCMC
+
 a <-nmr_bay_dat %>%
   rowwise() %>%
   mutate(nmr_t = list(nmr = erlang.func_dat(NMR0 = NMR0, T = T, t=182:308)))
